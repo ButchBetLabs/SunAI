@@ -70,3 +70,13 @@ def clearCompiledText():
     global compiledText
     compiledText = ""
     print("Compiled text cleared.")
+
+# Function to get the Stereo Mix 
+def getStereoMixDevice():
+    """Finds the device ID for Stereo Mix if available."""
+    devices = sd.query_devices()
+    for idx, device in enumerate(devices):
+        if "Stereo Mix" in device["name"]:
+            print(f"Stereo Mix ID: {idx}")
+            return idx
+    return None
