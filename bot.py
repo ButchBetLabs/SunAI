@@ -173,7 +173,13 @@ def onKeyPress(key):
 
 # Keyboard listener to reset Control + Shift flag
 def onKeyRelease(key):
-    print(f'Key {key}.')
+    global ctrlShiftPressed, selectingRegion
+    if key in (keyboard.Key.ctrl_l, keyboard.Key.ctrl_r):
+        ctrlShiftPressed = False
+
+    if key == keyboard.Key.shift and selectingRegion:
+        selectingRegion = False
+        print("Region selection cancelled.")
 
 # Start mouse and keyboard listeners
 print("Mouse and keyboard listeners started. Press ESC to stop.")
