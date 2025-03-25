@@ -31,7 +31,7 @@ recordingStream = None # Variable to store the active recording stream
 openaAIAPIKey = os.getenv("openaAIAPIKey")
 client = openai.OpenAI(api_key=openaAIAPIKey)
 
-# Function to capture screenshots and process text
+# Function to capture screenshots and get text
 def takeScreenshot(region=None):
     """ Captures a screenshot, extracts text, and appends it to compiledText. """
     global compiledText
@@ -40,3 +40,21 @@ def takeScreenshot(region=None):
     compiledText += "\n" + extractedText
     print("Screenshot taken and text extracted.")
     print(compiledText)
+
+# Function to process text with AI and then show the result
+def processWithAI(text):
+    if not text.strip():
+        print("No text to process.")
+        return
+
+    """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        store=True,
+        messages=[
+            {"role": "system", "content": "You are an AI assistant that processes text from screenshots and show a short result of the correct option, indicating the index of the response."},
+            {"role": "user", "content": text}
+        ]
+    )
+
+    print(response.choices[0].message.content)
