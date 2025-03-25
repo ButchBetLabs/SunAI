@@ -20,8 +20,7 @@ clickCount = 0  # Stores the number of clicks detected
 compiledText = ""  # Stores concatenated OCR text
 startX, startY, endX, endY = None, None, None, None  # Variables for region selection
 selectingRegion = False  # Flag to track if the user is selecting a region
-awaitingSelection = False  # Flag to track if the system is waiting for a region selection
-ctrlShiftPressed = False  # Flag to detect Control + Shift combination
+ctrlAltPressed = False  # Flag to detect Control + Shift combination
 isRecording = False # Flag to tack wheter recording is ongoing
 audioBuffer = []  # Stores recorded audio data
 recordingStream = None # Variable to store the active recording stream
@@ -30,7 +29,7 @@ recordingStream = None # Variable to store the active recording stream
 openaAIAPIKey = os.getenv("openaAIAPIKey")
 client = openai.OpenAI(api_key=openaAIAPIKey)
 
-# Function to capture screenshots and get text
+# Function to capture screenshots and process text
 def takeScreenshot(region=None):
     """ Captures a screenshot, extracts text, and appends it to compiledText. """
     global compiledText
@@ -40,13 +39,20 @@ def takeScreenshot(region=None):
     print("Screenshot taken and text extracted.")
     print(compiledText)
 
-# Function to process text with AI and then show the result
-def processWithAI(text):
-     """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
-    if not text.strip():
+# Function to process compiled text with AI
+def processCompiledText():
+    """ Processes the compiled text with AI and saves the result. """
+    if not compiledText.strip():
         print("No text to process.")
         return
 
+    processedText = processWithAI(compiledText)
+    print(processedText)
+    print("AI processing completed.")
+
+# Function to process text with AI
+def processWithAI(text):
+    """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         store=True,
@@ -55,9 +61,7 @@ def processWithAI(text):
             {"role": "user", "content": text}
         ]
     )
-
-    print(response.choices[0].message.content)
-
+    return response.choices[0].message.content
 
 # Function to clear compiled text
 def clearCompiledText():
@@ -70,7 +74,6 @@ def clearCompiledText():
 def getStereoMixDevice():
     """Finds the device ID for Stereo Mix if available."""
     devices = sd.query_devices()
-
     for idx, device in enumerate(devices):
         if "Stereo Mix" in device["name"]:
             print(f"Stereo Mix ID: {idx}")
@@ -83,7 +86,6 @@ def recordAudio():
     global audioBuffer, recordingStream, isRecording
     audioBuffer = []
     stereo_mix_device = getStereoMixDevice()
-
     if stereo_mix_device is None:
         print("Stereo Mix not found. Please enable it in the audio settings.")
         return
@@ -96,16 +98,15 @@ def recordAudio():
     recordingStream = sd.InputStream(
         callback=callback, samplerate=44100, channels=2, device=stereo_mix_device, dtype='int16'
     )
-
     recordingStream.start()
     isRecording = True
     print("Recording from Stereo Mix...")
+
 
 # Function to stop the recording and process the audio
 def stopRecording():
     """ Stops the recording, transcribes audio, and appends the text to compiledText. """
     global recordingStream, audioBuffer, isRecording, compiledText
-
     if not recordingStream:
         return
     
@@ -125,7 +126,6 @@ def stopRecording():
     recognizer = sr.Recognizer()
     with sr.AudioFile(file_path) as source:
         recognizer.adjust_for_ambient_noise(source)
-
         while True:
             audio_chunk = recognizer.record(source, duration=10)  # 10 seconds per chunk
             if len(audio_chunk.frame_data) == 0:
@@ -134,7 +134,7 @@ def stopRecording():
             try:
                 chunk_text = recognizer.recognize_google(audio_chunk)
                 compiledText += "\n" + chunk_text
-                # print("Chunk transcribed:", chunk_text)  
+                # print("Chunk transcribed:", chunk_text)  # Debugging output
             except sr.UnknownValueError:
                 print("Chunk unclear, skipping...")
             except sr.RequestError:
@@ -149,7 +149,7 @@ def stopRecording():
 # Function to mouse click listener
 def onClick(x, y, button, pressed):
     """ Detects mouse clicks and triggers the corresponding actions. """
-    global clickCount, startX, startY, endX, endY, selectingRegion, awaitingSelection
+    global clickCount, startX, startY, endX, endY, selectingRegion
     
     if selectingRegion:
         if pressed:
@@ -163,37 +163,37 @@ def onClick(x, y, button, pressed):
     
     if pressed:
         clickCount += 1
-        
-        def resetClickCount():
-            global clickCount, isRecording
-            time.sleep(1.5)
-            if clickCount == 3:
-                print("Processing AI analysis...")
-                threading.Thread(target=processCompiledText).start()
-            elif clickCount == 4:
-                threading.Thread(target=clearCompiledText).start()
-            elif clickCount == 5:
-                if isRecording:
-                    # Stop the recording and display message
-                    print("Recording finished...")
-                    threading.Thread(target=stopRecording).start()
-                    # Set isRecording to False as recording is stopped
-                    isRecording = False
-                else:
-                    # Start recording and display message
-                    print("Recording in progress...")
-                    threading.Thread(target=recordAudio).start()
-                    # Set isRecording to True as recording is started
-                    isRecording = True
-
-            clickCount = 0
-        
         threading.Thread(target=resetClickCount).start()
 
+# Function to reset click count and execute actions based on clicks        
+def resetClickCount():
+    global clickCount, isRecording
+    time.sleep(1.5)
+
+    if clickCount == 3:
+        print("Processing AI analysis...")
+        threading.Thread(target=processCompiledText).start()
+    elif clickCount == 4:
+        threading.Thread(target=clearCompiledText).start()
+    elif clickCount == 5:
+        if isRecording:
+            # Stop the recording and display message
+            print("Recording finished...")
+            threading.Thread(target=stopRecording).start()
+            # Set isRecording to False as recording is stopped
+            isRecording = False
+        else:
+            # Start recording and display message
+            print("Recording in progress...")
+            threading.Thread(target=recordAudio).start()
+            # Set isRecording to True as recording is started
+            isRecording = True
+
+    clickCount = 0
 
 # Function to keyboard listener to detect Control + Shift
 def onKeyPress(key):
-    global stopFlag, ctrlShiftPressed, selectingRegion
+    global ctrlAltPressed, selectingRegion
 
     try:
         if key == keyboard.Key.esc:
@@ -201,22 +201,21 @@ def onKeyPress(key):
             return False  # Stops the keyboard listener
         
         if key == keyboard.Key.ctrl_l or key == keyboard.Key.ctrl_r:
-            ctrlShiftPressed = True
-        elif key == keyboard.Key.shift:
-            if ctrlShiftPressed:
+            ctrlAltPressed = True
+        elif key == keyboard.Key.alt_l or key == keyboard.Key.alt_r:
+            if ctrlAltPressed:
                 print("Press and drag the mouse to select a region...")
                 selectingRegion = True
-                ctrlShiftPressed = False
+                ctrlAltPressed = False
     except AttributeError:
         pass
 
 # Keyboard listener to reset Control + Shift flag
 def onKeyRelease(key):
-    global ctrlShiftPressed, selectingRegion
+    global ctrlAltPressed, selectingRegion
     if key in (keyboard.Key.ctrl_l, keyboard.Key.ctrl_r):
-        ctrlShiftPressed = False
-
-    if key == keyboard.Key.shift and selectingRegion:
+        ctrlAltPressed = False
+    if key in (keyboard.Key.alt_l, keyboard.Key.alt_r) and selectingRegion:
         selectingRegion = False
         print("Region selection cancelled.")
 
@@ -225,4 +224,4 @@ print("Mouse and keyboard listeners started. Press ESC to stop.")
 with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
     with mouse.Listener(on_click=onClick) as mouseListener:
         keyboardListener.join()
-        mouseListener.stop()
+        mouseListener.stop()  
