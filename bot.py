@@ -30,3 +30,13 @@ recordingStream = None # Variable to store the active recording stream
 # Initialize OpenAI client
 openaAIAPIKey = os.getenv("openaAIAPIKey")
 client = openai.OpenAI(api_key=openaAIAPIKey)
+
+# Function to capture screenshots and process text
+def takeScreenshot(region=None):
+    """ Captures a screenshot, extracts text, and appends it to compiledText. """
+    global compiledText
+    screenshot = ImageGrab.grab(bbox=region) if region else ImageGrab.grab()
+    extractedText = pytesseract.image_to_string(screenshot)
+    compiledText += "\n" + extractedText
+    print("Screenshot taken and text extracted.")
+    print(compiledText)
