@@ -59,10 +59,6 @@ def processWithAI(text):
 
     print(response.choices[0].message.content)
 
-# Function to save result to a text file
-def showResult(text):
-    """ Show the text file with the latest AI-processed result. """
-    print(text)
 
 # Function to clear compiled text
 def clearCompiledText():
@@ -75,7 +71,7 @@ def clearCompiledText():
 def getStereoMixDevice():
     """Finds the device ID for Stereo Mix if available."""
     devices = sd.query_devices()
-    
+
     for idx, device in enumerate(devices):
         if "Stereo Mix" in device["name"]:
             print(f"Stereo Mix ID: {idx}")
@@ -105,3 +101,47 @@ def recordAudio():
     recordingStream.start()
     isRecording = True
     print("Recording from Stereo Mix...")
+
+# Function to stop the recording and process the audio
+def stopRecording():
+    """ Stops the recording, transcribes audio, and appends the text to compiledText. """
+    global recordingStream, audioBuffer, isRecording, compiledText
+
+    if not recordingStream:
+        return
+    
+    recordingStream.stop()
+    recordingStream.close()
+    recordingStream = None
+    isRecording = False
+    
+    if not audioBuffer:
+        print("No audio recorded.")
+        return
+    
+    recordedAudio = np.concatenate(audioBuffer, axis=0)
+    file_path = "temp_audio.wav"
+    write(file_path, 44100, recordedAudio)
+    
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(file_path) as source:
+        recognizer.adjust_for_ambient_noise(source)
+        while True:
+            audio_chunk = recognizer.record(source, duration=10)  # 10 seconds per chunk
+            if len(audio_chunk.frame_data) == 0:
+                break  # Stop when no more data
+
+            try:
+                chunk_text = recognizer.recognize_google(audio_chunk)
+                compiledText += "\n" + chunk_text
+                # print("Chunk transcribed:", chunk_text)  # Debugging output
+            except sr.UnknownValueError:
+                print("Chunk unclear, skipping...")
+            except sr.RequestError:
+                print("Speech-to-text service unavailable.")
+        
+        with open("transcription.txt", "w", encoding="utf-8") as file:
+            file.write("\n" + compiledText)
+    
+    print(compiledText)
+    print("Transciption finished...")
