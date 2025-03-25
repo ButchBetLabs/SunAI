@@ -146,10 +146,49 @@ def stopRecording():
     print(compiledText)
     print("Transciption finished...")
 
-    # Function to mouse click listener
+# Function to mouse click listener
 def onClick(x, y, button, pressed):
     """ Detects mouse clicks and triggers the corresponding actions. """
-    print("Click " + clickCount)
+    global clickCount, startX, startY, endX, endY, selectingRegion, awaitingSelection
+    
+    if selectingRegion:
+        if pressed:
+            startX, startY = x, y  # Start point of selection
+        else:
+            endX, endY = x, y  # End point of selection
+            selectingRegion = False
+            print("Taking screenshot of selected region...")
+            threading.Thread(target=takeScreenshot, args=((startX, startY, endX, endY),)).start()
+            return
+    
+    if pressed:
+        clickCount += 1
+        
+        def resetClickCount():
+            global clickCount, isRecording
+            time.sleep(1.5)
+            if clickCount == 3:
+                print("Processing AI analysis...")
+                threading.Thread(target=processCompiledText).start()
+            elif clickCount == 4:
+                threading.Thread(target=clearCompiledText).start()
+            elif clickCount == 5:
+                if isRecording:
+                    # Stop the recording and display message
+                    print("Recording finished...")
+                    threading.Thread(target=stopRecording).start()
+                    # Set isRecording to False as recording is stopped
+                    isRecording = False
+                else:
+                    # Start recording and display message
+                    print("Recording in progress...")
+                    threading.Thread(target=recordAudio).start()
+                    # Set isRecording to True as recording is started
+                    isRecording = True
+
+            clickCount = 0
+        
+        threading.Thread(target=resetClickCount).start()
 
 
 # Function to keyboard listener to detect Control + Shift
@@ -186,4 +225,4 @@ print("Mouse and keyboard listeners started. Press ESC to stop.")
 with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
     with mouse.Listener(on_click=onClick) as mouseListener:
         keyboardListener.join()
-        mouseListener.stop()  
+        mouseListener.stop()
