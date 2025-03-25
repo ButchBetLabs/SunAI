@@ -43,11 +43,11 @@ def takeScreenshot(region=None):
 
 # Function to process text with AI and then show the result
 def processWithAI(text):
+     """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
     if not text.strip():
         print("No text to process.")
         return
 
-    """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         store=True,
@@ -75,8 +75,33 @@ def clearCompiledText():
 def getStereoMixDevice():
     """Finds the device ID for Stereo Mix if available."""
     devices = sd.query_devices()
+    
     for idx, device in enumerate(devices):
         if "Stereo Mix" in device["name"]:
             print(f"Stereo Mix ID: {idx}")
             return idx
     return None
+
+# Function to handle audio recording
+def recordAudio():
+    """ Starts recording audio and stores data in audioBuffer. """
+    global audioBuffer, recordingStream, isRecording
+    audioBuffer = []
+    stereo_mix_device = getStereoMixDevice()
+
+    if stereo_mix_device is None:
+        print("Stereo Mix not found. Please enable it in the audio settings.")
+        return
+    
+    def callback(indata, frames, time, status):
+        if status:
+            print(status)
+        audioBuffer.append(indata.copy())
+    
+    recordingStream = sd.InputStream(
+        callback=callback, samplerate=44100, channels=2, device=stereo_mix_device, dtype='int16'
+    )
+
+    recordingStream.start()
+    isRecording = True
+    print("Recording from Stereo Mix...")
