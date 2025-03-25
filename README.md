@@ -85,7 +85,26 @@ Here’s a **visual flowchart** of how the program works:
 2. **Keyboard & mouse listeners stop**.
 3. **Program exits cleanly**.
 
+---
 
+## 🎛️ Enabling Stereo Mix on Windows  
+
+If you want to **record system audio**, you must enable **Stereo Mix** in Windows:  
+
+### **🔹 Steps to Enable Stereo Mix:**
+1. **Right-click** on the 🔊 **speaker icon** in the taskbar and select **"Sounds"**.  
+2. Go to the **"Recording"** tab.  
+3. **Right-click** anywhere inside the device list and enable **"Show Disabled Devices"**.  
+4. Find **"Stereo Mix"** in the list.  
+   - If **Stereo Mix is disabled**, **right-click** it and select **"Enable"**.  
+5. **Set Stereo Mix as the Default Device** by right-clicking it and selecting **"Set as Default Device"**.  
+6. Click **OK** to save the changes.  
+
+🔹 **If Stereo Mix is missing:**  
+- Make sure you have the latest **audio drivers** installed.  
+- Some laptops disable Stereo Mix by default; check your **sound settings** or BIOS.  
+
+---
 
 ### **Install and run**
 ```sh
