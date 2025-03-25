@@ -191,6 +191,32 @@ def resetClickCount():
 
     clickCount = 0
 
+# Function to reset click count and execute actions based on clicks
+def resetClickCount():
+    """ Waits and processes actions based on the number of clicks. """
+    global clickCount, isRecording
+
+    time.sleep(1.5)
+
+    if clickCount == 3:
+        print("Processing AI analysis...")
+        threading.Thread(target=processCompiledText).start()
+    elif clickCount == 4:
+        threading.Thread(target=clearCompiledText).start()
+    elif clickCount == 5:
+        if isRecording:
+            print("Recording finished...")
+            threading.Thread(target=stopRecording).start()
+            isRecording = False
+        else:
+            print("Recording in progress...")
+            threading.Thread(target=recordAudio).start()
+            isRecording = True
+            
+    clickCount = 0
+    print("Click count reseted")
+
+
 # Function to keyboard listener to detect Control + Shift
 def onKeyPress(key):
     global ctrlAltPressed, selectingRegion
