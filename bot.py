@@ -144,7 +144,7 @@ def stopRecording():
             except sr.RequestError:
                 print("Speech-to-text service unavailable.")
         
-        with open("transcription.txt", "w", encoding="utf-8") as file:cl
+        with open("transcription.txt", "w", encoding="utf-8") as file:
             file.write("\n" + compiledText)
     
     print(compiledText)
