@@ -107,6 +107,7 @@ If you want to **record system audio**, you must enable **Stereo Mix** in Window
 ---
 
 ### **Install and run**
+Apart from cloning the repository, you also need to create a `.env` file to store the `OPENAI_API_KEY`.
 ```sh
 pip install pyautogui pytesseract pynput pillow openai python-dotenv numpy sounddevice speechrecognition scipy
 python script.py "Your OpenAI system role prompt"
