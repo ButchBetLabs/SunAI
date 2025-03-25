@@ -58,3 +58,15 @@ def processWithAI(text):
     )
 
     print(response.choices[0].message.content)
+
+# Function to save result to a text file
+def showResult(text):
+    """ Show the text file with the latest AI-processed result. """
+    print(text)
+
+# Function to clear compiled text
+def clearCompiledText():
+    """ Clears the stored text data. """
+    global compiledText
+    compiledText = ""
+    print("Compiled text cleared.")
