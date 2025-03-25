@@ -14,3 +14,15 @@ from scipy.io.wavfile import write # Allows us to save audio data as a WAV file
 
 # Load environment variables
 load_dotenv()
+
+# Global Variables
+clickCount = 0  # Stores the number of clicks detected
+compiledText = ""  # Stores concatenated OCR text
+stopFlag = False  # Flag to stop listeners
+startX, startY, endX, endY = None, None, None, None  # Variables for region selection
+selectingRegion = False  # Flag to track if the user is selecting a region
+awaitingSelection = False  # Flag to track if the system is waiting for a region selection
+ctrlShiftPressed = False  # Flag to detect Control + Shift combination
+isRecording = False # Flag to tack wheter recording is ongoing
+audioBuffer = []  # Stores recorded audio data
+recordingStream = None # Variable to store the active recording stream
