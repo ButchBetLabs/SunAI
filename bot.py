@@ -18,7 +18,6 @@ load_dotenv()
 # Global Variables
 clickCount = 0  # Stores the number of clicks detected
 compiledText = ""  # Stores concatenated OCR text
-stopFlag = False  # Flag to stop listeners
 startX, startY, endX, endY = None, None, None, None  # Variables for region selection
 selectingRegion = False  # Flag to track if the user is selecting a region
 awaitingSelection = False  # Flag to track if the system is waiting for a region selection
@@ -155,7 +154,22 @@ def onClick(x, y, button, pressed):
 
 # Function to keyboard listener to detect Control + Shift
 def onKeyPress(key):
-    print(f'Key {key} pressed.')
+    global stopFlag, ctrlShiftPressed, selectingRegion
+
+    try:
+        if key == keyboard.Key.esc:
+            print("Stopping listeners...")
+            return False  # Stops the keyboard listener
+        
+        if key == keyboard.Key.ctrl_l or key == keyboard.Key.ctrl_r:
+            ctrlShiftPressed = True
+        elif key == keyboard.Key.shift:
+            if ctrlShiftPressed:
+                print("Press and drag the mouse to select a region...")
+                selectingRegion = True
+                ctrlShiftPressed = False
+    except AttributeError:
+        pass
 
 # Keyboard listener to reset Control + Shift flag
 def onKeyRelease(key):
@@ -166,4 +180,4 @@ print("Mouse and keyboard listeners started. Press ESC to stop.")
 with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
     with mouse.Listener(on_click=onClick) as mouseListener:
         keyboardListener.join()
-        mouseListener.stop()  # Stops the mouse listener when 'Esc' is pressed
+        mouseListener.stop()  
