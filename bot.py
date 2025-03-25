@@ -11,3 +11,6 @@ import numpy as np  # For efficient numerical operations, particularly with larg
 import sounddevice as sd # To audio recording
 import speech_recognition as sr # For trascribing audio to text
 from scipy.io.wavfile import write # Allows us to save audio data as a WAV file
+
+# Load environment variables
+load_dotenv()
