@@ -11,11 +11,13 @@ import numpy as np  # For efficient numerical operations, particularly with larg
 import sounddevice as sd # To audio recording
 import speech_recognition as sr # For trascribing audio to text
 from scipy.io.wavfile import write # Allows us to save audio data as a WAV file
+import sys
 
 # Load environment variables
 load_dotenv()
 
 # Global Variables
+userInput = "" # Stores the command system content role 
 clickCount = 0  # Stores the number of clicks detected
 compiledText = ""  # Stores concatenated OCR text
 startX, startY, endX, endY = None, None, None, None  # Variables for region selection
@@ -41,6 +43,7 @@ def takeScreenshot(region=None):
 
 # Function to process compiled text with AI
 def processCompiledText():
+    print(userInput != "", userInput)
     """ Processes the compiled text with AI and saves the result. """
     if not compiledText.strip():
         print("No text to process.")
@@ -52,12 +55,13 @@ def processCompiledText():
 
 # Function to process text with AI
 def processWithAI(text):
+    
     """ Uses OpenAI's GPT to analyze and generate a response based on the extracted text. """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         store=True,
         messages=[
-            {"role": "system", "content": "You are an AI assistant that processes text from screenshots and show a short result of the correct option, indicating the index of the response."},
+            {"role": "system", "content": userInput},
             {"role": "user", "content": text}
         ]
     )
@@ -140,7 +144,7 @@ def stopRecording():
             except sr.RequestError:
                 print("Speech-to-text service unavailable.")
         
-        with open("transcription.txt", "w", encoding="utf-8") as file:
+        with open("transcription.txt", "w", encoding="utf-8") as file:cl
             file.write("\n" + compiledText)
     
     print(compiledText)
@@ -214,7 +218,7 @@ def resetClickCount():
             isRecording = True
             
     clickCount = 0
-    print("Click count reseted")
+    #print("Click count reseted")
 
 
 # Function to keyboard listener to detect Control + Shift
@@ -245,9 +249,16 @@ def onKeyRelease(key):
         selectingRegion = False
         print("Region selection cancelled.")
 
-# Start mouse and keyboard listeners
-print("Mouse and keyboard listeners started. Press ESC to stop.")
-with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
-    with mouse.Listener(on_click=onClick) as mouseListener:
-        keyboardListener.join()
-        mouseListener.stop()  
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        userInput = " ".join(sys.argv[1:])  # Join all arguments into a single string
+        
+        # Start mouse and keyboard listeners
+        print("Mouse and keyboard listeners started. Press ESC to stop.")
+        with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
+            with mouse.Listener(on_click=onClick) as mouseListener:
+                keyboardListener.join()
+                mouseListener.stop()  
+    else:
+        print("No input received. Please provide a text command.")
+
