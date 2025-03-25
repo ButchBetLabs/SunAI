@@ -126,6 +126,7 @@ def stopRecording():
     recognizer = sr.Recognizer()
     with sr.AudioFile(file_path) as source:
         recognizer.adjust_for_ambient_noise(source)
+
         while True:
             audio_chunk = recognizer.record(source, duration=10)  # 10 seconds per chunk
             if len(audio_chunk.frame_data) == 0:
@@ -134,7 +135,7 @@ def stopRecording():
             try:
                 chunk_text = recognizer.recognize_google(audio_chunk)
                 compiledText += "\n" + chunk_text
-                # print("Chunk transcribed:", chunk_text)  # Debugging output
+                # print("Chunk transcribed:", chunk_text)  
             except sr.UnknownValueError:
                 print("Chunk unclear, skipping...")
             except sr.RequestError:
@@ -145,3 +146,24 @@ def stopRecording():
     
     print(compiledText)
     print("Transciption finished...")
+
+    # Function to mouse click listener
+def onClick(x, y, button, pressed):
+    """ Detects mouse clicks and triggers the corresponding actions. """
+    print("Click " + clickCount)
+
+
+# Function to keyboard listener to detect Control + Shift
+def onKeyPress(key):
+    print(f'Key {key} pressed.')
+
+# Keyboard listener to reset Control + Shift flag
+def onKeyRelease(key):
+    print(f'Key {key}.')
+
+# Start mouse and keyboard listeners
+print("Mouse and keyboard listeners started. Press ESC to stop.")
+with keyboard.Listener(on_press=onKeyPress, on_release=onKeyRelease) as keyboardListener:
+    with mouse.Listener(on_click=onClick) as mouseListener:
+        keyboardListener.join()
+        mouseListener.stop()  # Stops the mouse listener when 'Esc' is pressed
