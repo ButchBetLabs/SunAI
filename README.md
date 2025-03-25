@@ -28,7 +28,7 @@ This script requires the following **Python libraries**:
 
 Here’s a **visual flowchart** of how the program works:
 
-![Program Workflow]()
+![Program Workflow](flow.svg)
 
 ---
 
