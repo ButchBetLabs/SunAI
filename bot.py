@@ -26,3 +26,7 @@ ctrlShiftPressed = False  # Flag to detect Control + Shift combination
 isRecording = False # Flag to tack wheter recording is ongoing
 audioBuffer = []  # Stores recorded audio data
 recordingStream = None # Variable to store the active recording stream
+
+# Initialize OpenAI client
+openaAIAPIKey = os.getenv("openaAIAPIKey")
+client = openai.OpenAI(api_key=openaAIAPIKey)
