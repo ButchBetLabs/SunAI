@@ -89,20 +89,63 @@ Here’s a **visual flowchart** of how the program works:
 
 ## 🎛️ Enabling Stereo Mix on Windows  
 
-If you want to **record system audio**, you must enable **Stereo Mix** in Windows:  
+If you want to **record system audio**, you must enable **Stereo Mix** in Windows. Follow these steps to check availability and enable it:  
 
-### **🔹 Steps to Enable Stereo Mix:**
-1. **Right-click** on the 🔊 **speaker icon** in the taskbar and select **"Sounds"**.  
-2. Go to the **"Recording"** tab.  
-3. **Right-click** anywhere inside the device list and enable **"Show Disabled Devices"**.  
-4. Find **"Stereo Mix"** in the list.  
-   - If **Stereo Mix is disabled**, **right-click** it and select **"Enable"**.  
-5. **Set Stereo Mix as the Default Device** by right-clicking it and selecting **"Set as Default Device"**.  
-6. Click **OK** to save the changes.  
+### **🔹 Phase 1: Enable Stereo Mix via Control Panel**  
+1. Open **Control Panel**.  
+2. Click on **Hardware and Sound**.  
+3. Click on **Sound** (**Administración de dispositivos de audio**).  
+4. Go to the **Recording** tab.  
+5. Find **Stereo Mix**, **double-click** it.  
+6. In **Device Usage**, select **Enable** (**Habilitar**).  
+7. Click **Apply**.  
 
-🔹 **If Stereo Mix is missing:**  
-- Make sure you have the latest **audio drivers** installed.  
-- Some laptops disable Stereo Mix by default; check your **sound settings** or BIOS.  
+### **🔹 Phase 2: Set Stereo Mix as the Default Device**  
+1. Open **Settings** → **Sound**.  
+2. Scroll to **Input Devices**.  
+3. Select **Stereo Mix** as the **default recording device**  
+
+---
+
+## 🔹 Use Cases of SunAI
+
+### 📄 1. Automated Information Extraction in Business Environments
+**Example:** A support agent needs to extract information from multiple open PDF documents without manually copying text. SunAI allows capturing the text with a simple shortcut and generates an automatic summary.
+
+### 📑 2. Real-Time Screenshot Processing
+**Example:** Researchers or journalists can take screenshots of articles, process them with OCR, and get an AI-generated summary within seconds, avoiding manual transcription.
+
+### 🎤 3. Audio Transcription for Meetings or Classes
+**Example:** A student records a university lecture and later uses SunAI to convert the audio into text, generating an AI-powered summary.
+
+### 🤖 4. Assistance for Visually or Motor-Impaired Users
+**Example:** A user with vision problems uses SunAI to capture on-screen text and obtain a spoken summary (if integrated with a TTS system).
+
+### 🎮 5. Data Capture in Games or Applications Without Copy-Pasting
+**Example:** An MMORPG player needs to quickly extract quest information or statistics without manually typing, using screenshots processed by SunAI.
+
+### 🏢 6. Workflow Optimization in IT Support
+**Example:** An IT technician can take error screenshots, extract the error code, and use AI to generate possible solutions without manually searching in forums.
+
+### 📊 7. Financial Document Analysis and Summarization
+**Example:** A financial analyst uses SunAI to capture bank statements or PDF reports and generate an automated AI summary.
+
+### 📰 8. Real-Time News and Report Summarization
+**Example:** A journalist captures parts of online articles and generates an AI summary for quick understanding.
+
+### 📷 9. Data Extraction from Images or Graphs
+**Example:** A data scientist captures graphs from a report and extracts text or values for easier analysis.
+
+### 🕵️ 10. Security and Cybersecurity Support
+**Example:** A security analyst uses SunAI to capture logs of attacks or alerts on the screen and analyze the data with AI.
+
+---
+
+## 🚀 Future Expansions and Improvements:
+✔ **Integration with voice APIs (TTS)** to read the results aloud.  
+✔ **Automatic language detection in OCR** for better compatibility.  
+✔ **Scheduled capture mode** to monitor and extract text automatically at set intervals.  
+✔ **Implement a User Interface (UI)** to enhance user experience and improve accessibility.
 
 ---
 
