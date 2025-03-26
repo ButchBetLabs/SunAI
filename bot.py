@@ -161,6 +161,11 @@ def onClick(x, y, button, pressed):
         else:
             endX, endY = x, y  # End point of selection
             selectingRegion = False
+            
+            # Normalize coordinates to ensure (startX, startY) is top-left and (endX, endY) is bottom-right
+            startX, endX = min(startX, endX), max(startX, endX)
+            startY, endY = min(startY, endY), max(startY, endY)
+
             print("Taking screenshot of selected region...")
             threading.Thread(target=takeScreenshot, args=((startX, startY, endX, endY),)).start()
             return
